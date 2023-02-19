@@ -5,6 +5,8 @@ import { preview } from "../assets";
 import { getRandomPrompt } from "../utils";
 import { FormField, Loader } from "../components";
 
+import { adressBack } from "./adressBack";
+
 const CreatePost = () => {
   const navigate = useNavigate();
 
@@ -30,7 +32,7 @@ const CreatePost = () => {
       console.log("form.prompt", form.prompt);
       try {
         setGeneratingImg(true);
-        const response = await fetch("http://localhost:8080/api/v1/dalle/", {
+        const response = await fetch(adressBack + "/api/v1/dalle/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -58,7 +60,7 @@ const CreatePost = () => {
     if (form.prompt && form.photo) {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/v1/post", {
+        const response = await fetch(adressBack + "/api/v1/post", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
