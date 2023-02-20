@@ -7,6 +7,11 @@ import { FormField, Loader } from "../components";
 
 import { adressBack } from "./adressBack";
 
+//Toast
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/ReactToastify.min.css";
+import { Slide, Zoom, Flip, Bounce } from "react-toastify";
+
 const CreatePost = () => {
   const navigate = useNavigate();
 
@@ -50,7 +55,15 @@ const CreatePost = () => {
         setGeneratingImg(false);
       }
     } else {
-      alert("Please provide proper prompt");
+      toast("Please provide proper prompt", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
@@ -69,7 +82,15 @@ const CreatePost = () => {
         });
 
         await response.json();
-        alert("Success");
+        toast("Success", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         navigate("/");
       } catch (err) {
         alert(err);
@@ -77,7 +98,15 @@ const CreatePost = () => {
         setLoading(false);
       }
     } else {
-      alert("Please generate an image with proper details");
+      toast("Please generate an image with proper details", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
@@ -159,6 +188,20 @@ const CreatePost = () => {
           </button>
         </div>
       </form>
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        // theme="dark"
+        toastStyle={{ backgroundColor: "rgb(100, 105, 255)", color: "white" }}
+        transition={Flip}
+      />
     </section>
   );
 };
