@@ -4,9 +4,17 @@ import { Card, FormField, Loader } from "../components";
 
 import { adressBack } from "./adressBack";
 
-const RenderCards = ({ data, title }) => {
+//Toast
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/ReactToastify.min.css";
+import { Slide, Zoom, Flip, Bounce } from "react-toastify";
+import { successColor, failureColor } from "../utils/index";
+
+const RenderCards = ({ data, title, deleteImage }) => {
   if (data?.length > 0) {
-    return data.map((post) => <Card key={post._id} {...post} />);
+    return data.map((post) => (
+      <Card key={post._id} deleteImage={deleteImage} {...post} />
+    ));
   }
 
   return (
@@ -24,7 +32,6 @@ const Home = () => {
 
   const fetchPosts = async () => {
     setLoading(true);
-
     try {
       const response = await fetch(adressBack + "/api/v1/post", {
         method: "GET",
@@ -38,7 +45,20 @@ const Home = () => {
         setAllPosts(result.data.reverse());
       }
     } catch (err) {
-      alert(err);
+      toast("Impossible to fetch your images, please try later", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          background: failureColor,
+          color: "white",
+        },
+      });
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -62,6 +82,68 @@ const Home = () => {
         setSearchedResults(searchResult);
       }, 500)
     );
+  };
+
+  const displayToastSucces = () => {
+    toast("The photo has been deleted", {
+      position: "top-center",
+      autoClose: 4000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      style: {
+        background: successColor,
+        color: "white",
+      },
+    });
+  };
+
+  const displayToastFailure = () => {
+    toast("Impossible to delete your image, please try later", {
+      position: "top-center",
+      autoClose: 4000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      style: {
+        background: failureColor,
+        color: "white",
+      },
+    });
+  };
+
+  const deleteImage = async (_id, photo) => {
+    let idCould = photo.split("/");
+    idCould = idCould[idCould.length - 1];
+    idCould = idCould.substring(0, idCould.length - 4);
+    const objectIds = {
+      idCloud: idCould,
+      idDB: _id,
+    };
+    try {
+      const response = await fetch(adressBack + "/api/v1/post/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(objectIds),
+      });
+      if (response.ok === true) {
+        let newArray = [...allPosts];
+        newArray = newArray.filter((post) => post._id !== _id);
+        setAllPosts(newArray);
+        displayToastSucces();
+      } else {
+        displayToastFailure();
+      }
+    } catch (err) {
+      displayToastFailure();
+      console.log(err);
+    }
   };
 
   return (
@@ -105,14 +187,31 @@ const Home = () => {
                 <RenderCards
                   data={searchedResults}
                   title="No Search Results Found"
+                  deleteImage={deleteImage}
                 />
               ) : (
-                <RenderCards data={allPosts} title="No Posts Yet" />
+                <RenderCards
+                  data={allPosts}
+                  title="No Posts Yet"
+                  deleteImage={deleteImage}
+                />
               )}
             </div>
           </>
         )}
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        transition={Flip}
+      />
     </section>
   );
 };

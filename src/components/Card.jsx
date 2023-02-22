@@ -1,9 +1,9 @@
 import React from "react";
 
-import { download } from "../assets";
 import { downloadImage } from "../utils";
-
-const Card = ({ _id, name, prompt, photo }) => (
+import { TiDelete } from "react-icons/ti";
+import { MdDownloadForOffline } from "react-icons/md";
+const Card = ({ _id, name, prompt, photo, deleteImage }) => (
   <div className="rounded-xl group relative shadow-card hover:shadow-cardhover card">
     <img
       className="w-full h-auto object-cover rounded-xl"
@@ -20,17 +20,26 @@ const Card = ({ _id, name, prompt, photo }) => (
           </div>
           <p className="text-white text-sm">{name}</p>
         </div>
-        <button
-          type="button"
-          onClick={() => downloadImage(_id, photo)}
-          className="outline-none bg-transparent border-none"
-        >
-          <img
-            src={download}
-            alt="download"
-            className="w-6 h-6 object-contain invert"
-          />
-        </button>
+        <div className="flex justify-center items-center">
+          <button
+            type="button"
+            onClick={() => downloadImage(_id, photo)}
+            className="outline-none bg-transparent border-none"
+          >
+            <MdDownloadForOffline
+              style={{ color: "white", height: "32px", width: "32px" }}
+            />
+          </button>
+          <button
+            type="button"
+            onClick={() => deleteImage(_id, photo)}
+            className="outline-none bg-transparent border-none"
+          >
+            <TiDelete
+              style={{ color: "white", height: "40px", width: "40px" }}
+            />
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -11,6 +11,7 @@ import { adressBack } from "./adressBack";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/ReactToastify.min.css";
 import { Slide, Zoom, Flip, Bounce } from "react-toastify";
+import { successColor, failureColor } from "../utils/index";
 
 const CreatePost = () => {
   const navigate = useNavigate();
@@ -34,7 +35,6 @@ const CreatePost = () => {
 
   const generateImage = async () => {
     if (form.prompt) {
-      console.log("form.prompt", form.prompt);
       try {
         setGeneratingImg(true);
         const response = await fetch(adressBack + "/api/v1/dalle/", {
@@ -46,11 +46,24 @@ const CreatePost = () => {
             prompt: form.prompt,
           }),
         });
-        console.log("response", response);
+
         const data = await response.json();
         setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
       } catch (err) {
-        alert(err);
+        toast("Impossible to generate image, please try later", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            background: failureColor,
+            color: "white",
+          },
+        });
+        console.log(err);
       } finally {
         setGeneratingImg(false);
       }
@@ -63,10 +76,15 @@ const CreatePost = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
+        style: {
+          background: failureColor,
+          color: "white",
+        },
       });
     }
   };
 
+  //submit to save image in the cloud
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -80,9 +98,27 @@ const CreatePost = () => {
           },
           body: JSON.stringify({ ...form }),
         });
-
-        await response.json();
-        toast("Success", {
+        if (response.ok) {
+          await response.json();
+          toast("Your image has been share with the cloud server", {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: {
+              background: successColor,
+              color: "white",
+            },
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        }
+      } catch (err) {
+        toast("Impossible to share your image, please try later", {
           position: "top-center",
           autoClose: 4000,
           hideProgressBar: true,
@@ -90,10 +126,12 @@ const CreatePost = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
+          style: {
+            background: failureColor,
+            color: "white",
+          },
         });
-        navigate("/");
-      } catch (err) {
-        alert(err);
+        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -106,6 +144,10 @@ const CreatePost = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
+        style: {
+          background: failureColor,
+          color: "white",
+        },
       });
     }
   };
@@ -198,8 +240,6 @@ const CreatePost = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        // theme="dark"
-        toastStyle={{ backgroundColor: "rgb(100, 105, 255)", color: "white" }}
         transition={Flip}
       />
     </section>
